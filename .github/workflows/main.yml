@@ -25,7 +25,28 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      # For results exported from Fortify SSC
+      - name: Check if Fortify SSC results exist
+        id: ssc_results_check
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "gh-fortify-sast.sarif"
+
       - name: Import Fortify results to GitHub Security Code Scanning
+        if: steps.ssc_results_check.outputs.files_exists == 'true'
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ./gh-fortify-sast.sarif
+      
+      # For results exported from Fortify on Demand (FoD)
+      - name: Check if Fortify on Demand (FoD) results exist
+        id: fod_results_check
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "gh-fod-sast.sarif"
+
+      - name: Import Fortify results to GitHub Security Code Scanning
+        if: steps.fod_results_check.outputs.files_exists == 'true'
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ./gh-fod-sast.sarif
