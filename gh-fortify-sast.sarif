@@ -15,8 +15,7 @@
             "text" : "The application uses a deny list to control which attributes are exposed by a form in forms.py. Developers can forget to update the deny list when adding new attributes and may accidentally expose sensitive fields to attackers.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4256/?engineType=SCA&issue=956471A41EA664CF9C423926AC3F4DCC.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4256/?engineType=SCA&issue=956471A41EA664CF9C423926AC3F4DCC)."
+            "text" : "The application uses an exclude deny list. This is hard to maintain and error prone. If developers add new fields to the form or Model that backs up the form and forget to update the exclude filter, they may be exposing sensitive fields to attackers. Attackers will be able to submit and bind malicious data to any non-excluded field.\n\nExample 1: The following form exposes some User attributes but checks a deny list for the user id:\n\n\nfrom myapp.models import User\n...\nclass UserForm(ModelForm):\n  class Meta:\n    model = User\n    exclude = ['id']\n...\n\n\nIf User model was updated with a new role attribute and the associated UserForm was not updated, the role attribute would be exposed in the form.\n\nUse the fields attribute in the Meta class of the form so when a new field is added, it will not be available to the form unless the developer updates the list.\n\nExample 2: The following code uses an allow list approach.\n\n\nfrom myapp.models import User\n...\nclass UserForm(ModelForm):\n  class Meta:\n    model = User\n    fields = ['name', 'lastname', 'email']\n...\n\n\nIf User model was updated with a new role attribute and the associated UserForm was not updated, the role attribute would not be exposed in the form by default.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4256/?engineType=SCA&issue=956471A41EA664CF9C423926AC3F4DCC"
           },
           "properties" : {
             "tags" : [ "Medium" ],
@@ -31,8 +30,7 @@
             "text" : "The application does not set HTTP Strict Transport Security (<code>HSTS</code>) headers, allowing attackers to replace SSL/TLS connections with plain HTTP ones and steal sensitive information by performing HTTPS stripping attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4240/?engineType=SCA&issue=2AF6A8C7A8DD3EEACDD4C828BFF3A6F6.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4240/?engineType=SCA&issue=2AF6A8C7A8DD3EEACDD4C828BFF3A6F6)."
+            "text" : "An HTTPS stripping attack is a type of man-in-the-middle attack where the attacker watches all the HTTP traffic for location headers and links referencing HTTPS and replaces them with HTTP versions. The attacker keeps a list of all HTTP substitutions made so that they can make the HTTPS request back to the server. All stripped HTTP connections are proxied out to the server over HTTPS. All traffic between the victim and the attacker is sent over HTTP, revealing usernames, passwords, and other private information, but the server is still receiving the expected HTTPS traffic from the attacker so nothing seems wrong.\n\nHTTP Strict Transport Security (HSTS) is a security header that instructs the browser to always connect to the site returning the HSTS headers over SSL/TLS during a period specified in the header itself. Any connection to the server over HTTP will be automatically replaced with an HTTPS one, even if the user types http:// in the browser URL bar.\n\nDjango 1.8+ and older Django versions using django-secure plugin can enable HSTS headers using the following settings:\n\n\n...\nSECURE_HSTS_SECONDS = 31536000\nSECURE_HSTS_INCLUDE_SUBDOMAINS = True\n...\n\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4240/?engineType=SCA&issue=2AF6A8C7A8DD3EEACDD4C828BFF3A6F6"
           },
           "properties" : {
             "tags" : [ "High" ],
@@ -47,8 +45,7 @@
             "text" : "The application contains a component that is not designed to be deployed on a production environment.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4244/?engineType=SCA&issue=397BD397B37AFBC28785E481EC387103.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4244/?engineType=SCA&issue=397BD397B37AFBC28785E481EC387103)."
+            "text" : "The Django application exposes the serve view of the static files application which is not designed to be deployed in a production environment. According to Django documentation:\n\n\"The static files tools are mostly designed to help with getting static files successfully deployed into production. This usually means a separate, dedicated static file server, which is a lot of overhead to mess with when developing locally. Thus, the staticfiles app ships with a quick and dirty helper view that you can use to serve files locally in development.\n\nThis view will only work if DEBUG is True.\n\nThat's because this view is grossly inefficient and probably insecure. This is only intended for local development, and should never be used in production.\"\n\nDo not use django.views.static.serve() to serve your static files. Instead, use the web server hosting the Django application, a dedicated server, or a CDN service.\n\nCheck the Django Managing static files documentation for instructions on how to do that.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4244/?engineType=SCA&issue=397BD397B37AFBC28785E481EC387103"
           },
           "properties" : {
             "tags" : [ "Low" ],
@@ -63,8 +60,7 @@
             "text" : "The application fails to set the <code>HttpOnly</code> flag to <code>true</code> for session cookies.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4245/?engineType=SCA&issue=4238239D1D1E91327D366680F0B17EA3.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4245/?engineType=SCA&issue=4238239D1D1E91327D366680F0B17EA3)."
+            "text" : "Browsers support the HttpOnly cookie property that prevents client-side scripts from accessing the cookie. Cross-site scripting attacks often access cookies in an attempt to steal session identifiers or authentication tokens. Without HttpOnly enabled, attackers have easier access to user cookies.\n\nExample 1: The following settings configuration explicitly sets the session cookies without setting the HttpOnly property.\n\n...\nMIDDLEWARE_CLASSES = (\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'csp.middleware.CSPMiddleware',\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\nSESSION_COOKIE_HTTPONLY = False\n...\n\n\nEnable the HttpOnly property for session cookies. This can be done by setting the SESSION_COOKIE_HTTPONLY property to True.\n\nExample 2: The settings in the following example explicitly set the HttpOnly parameter to True.\n\n...\nMIDDLEWARE_CLASSES = (\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'csp.middleware.CSPMiddleware',\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\nSESSION_COOKIE_HTTPONLY = True\n...\n\n\nDo not be lulled into a false sense of security by HttpOnly. Several mechanisms for bypassing this security feature have been developed, so it is not effective in all circumstances.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4245/?engineType=SCA&issue=4238239D1D1E91327D366680F0B17EA3"
           },
           "properties" : {
             "tags" : [ "High" ],
@@ -79,8 +75,7 @@
             "text" : "The Django application does not set the <code>X-Content-Type-Options</code> to <code>nosniff</code> or explicitly disables this security header.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4247/?engineType=SCA&issue=4ECC3F2A9883D9852415F18C2CAF8380.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4247/?engineType=SCA&issue=4ECC3F2A9883D9852415F18C2CAF8380)."
+            "text" : "MIME sniffing is the practice of inspecting the content of a byte stream to attempt to deduce the file format of the data within it.\n\nIf MIME sniffing is not explicitly disabled, some browsers can be manipulated into interpreting data in a way that is not intended, allowing for cross-site scripting attacks.\n\nFor each page that could contain user-controllable content, you should use the HTTP header X-Content-Type-Options: nosniff.\n\nTo make sure the application is not vulnerable to MIME sniffing, the programmer can either:\n\n1. Set the HTTP header X-Content-Type-Options: nosniff globally for all pages in the application in the settings.py file.\n2. Set the required header on a per-page basis, for only those pages that might contain user-controllable content.\n\nTo set the HTTP header globally set the SECURE_CONTENT_TYPE_NOSNIFF setting to True in the settings.py. This setting is available in Django 1.8+ and in the django-secure plugin:\n\n\n...\nMIDDLEWARE_CLASSES = (\n    ...\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\nSECURE_CONTENT_TYPE_NOSNIFF = True\n...\n\n\nIn order to set the header manually on a per-page basis:\n\n\ndef view_method(request)\n  ...\n  res = HttpResponse()\n  ...\n  res['X-Content-Type-Options'] = 'nosniff'\n  return res\n\n\nThis header is critical to preventing certain classes of attacks and should not be removed or set to any other value.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4247/?engineType=SCA&issue=4ECC3F2A9883D9852415F18C2CAF8380"
           },
           "properties" : {
             "tags" : [ "Medium" ],
@@ -95,8 +90,7 @@
             "text" : "The <code>X-XSS-Protection</code> header is explicitly disabled which may increase the risk of cross-site scripting attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4248/?engineType=SCA&issue=5B0F92DE5E078CCB52E88CBE1DD9ABC7.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4248/?engineType=SCA&issue=5B0F92DE5E078CCB52E88CBE1DD9ABC7)."
+            "text" : "X-XSS-Protection refers to a header that is automatically enabled in Internet Explorer 8 upwards and the latest versions of Chrome. When the header value is set to false (0) cross-site scripting protection is disabled.\n\nThe header can be set in multiple locations and should be checked for both misconfiguration as well as malicious tampering.\n\nDjango applications can be automatically configured to instruct browsers to enable their cross-site scripting protections by sending the X-XSS-Protection header with value \"X-XSS-Protection: 1; mode=block\". In order to do so, the SECURE_BROWSER_XSS_FILTER setting included in Django 1.8+ or in the django-secure plugin must be set to True:\n\n\n...\nMIDDLEWARE_CLASSES = (\n    ...\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\nSECURE_BROWSER_XSS_FILTER = True\n...\n\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4248/?engineType=SCA&issue=5B0F92DE5E078CCB52E88CBE1DD9ABC7"
           },
           "properties" : {
             "tags" : [ "Medium" ],
@@ -111,8 +105,7 @@
             "text" : "The application fails to set the <code>HttpOnly</code> flag to <code>true</code> for CSRF cookies.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4252/?engineType=SCA&issue=6A0BDCE856C917AE60E8DC1E8D8BD371.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4252/?engineType=SCA&issue=6A0BDCE856C917AE60E8DC1E8D8BD371)."
+            "text" : "Browsers support the HttpOnly cookie property that prevents client-side scripts from accessing the cookie. Cross-site scripting attacks often access cookies in an attempt to steal session identifiers or authentication tokens. Without HttpOnly enabled, attackers have easier access to user cookies.\n\nExample 1: When using the django.middleware.csrf.CsrfViewMiddleware Django middleware, CSRF cookies are sent without setting the HttpOnly property.\n\n...\nMIDDLEWARE_CLASSES = (\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'csp.middleware.CSPMiddleware',\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\n\n\nEnable the HttpOnly property for CSRF cookies. This can be done by setting the SESSION_COOKIE_HTTPONLY property to True.\n\nExample 2: The settings in the following example explicitly set the HttpOnly parameter to True.\n\n...\nMIDDLEWARE_CLASSES = (\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'csp.middleware.CSPMiddleware',\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\nCSRF_COOKIE_HTTPONLY = True\n...\n\n\nDo not be lulled into a false sense of security by HttpOnly. Several mechanisms for bypassing this security feature have been developed, so it is not effective in all circumstances.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4252/?engineType=SCA&issue=6A0BDCE856C917AE60E8DC1E8D8BD371"
           },
           "properties" : {
             "tags" : [ "High" ],
@@ -127,8 +120,7 @@
             "text" : "The program does not explicitly set the <code>CSRF_COOKIE_SECURE</code> property to <code>True</code> or sets it to <code>False</code> in settings.py on line 16. \n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4257/?engineType=SCA&issue=AD0618D59C6C7C72456A985EADF9F5C9.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4257/?engineType=SCA&issue=AD0618D59C6C7C72456A985EADF9F5C9)."
+            "text" : "Modern web browsers support a Secure flag for each cookie. If the flag is set, the browser will only send the cookie over HTTPS. Sending cookies over an unencrypted channel can expose them to network sniffing attacks, so the secure flag helps keep a cookie's value confidential. This is especially important if the cookie contains private data, session identifiers, or carries a CSRF token.\n\nIn this case, the program fails to set the CSRF_COOKIE_SECURE property to True in settings.py on line 16.\n\n\nExample 1: The following configuration entry does not explicitly set the Secure bit for CSRF cookies.\n\n...\nMIDDLEWARE_CLASSES = (\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'csp.middleware.CSPMiddleware',\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\n\n\nIf an application uses both HTTPS and HTTP, but does not set the Secure flag, cookies sent during an HTTPS request will also be sent during subsequent HTTP requests. Attackers may then compromise the cookie by sniffing the unencrypted network traffic, which is particularly easy over wireless networks.\n\nSet the Secure flag on all cookies in order to instruct browsers not to send these cookies over HTTP.\n\nExample 2: The following code corrects the mistake in Example 1 by explicitly setting the CSRF_COOKIE_SECURE property to True.\n\n\n...\nMIDDLEWARE_CLASSES = (\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'csp.middleware.CSPMiddleware',\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\nCSRF_COOKIE_SECURE = True\n...\n\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4257/?engineType=SCA&issue=AD0618D59C6C7C72456A985EADF9F5C9"
           },
           "properties" : {
             "tags" : [ "High" ],
@@ -143,8 +135,7 @@
             "text" : "The application is not configured to send HTTP redirects over SSL/TLS.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4260/?engineType=SCA&issue=BF17023672C75DF484A9A56A1549D745.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4260/?engineType=SCA&issue=BF17023672C75DF484A9A56A1549D745)."
+            "text" : "All communication over HTTP, FTP, or gopher is unauthenticated and unencrypted. It is therefore subject to compromise.\n\nDjango does not serve HTTP redirects over SSL by default, so data in these redirected connections can be compromised as they are delivered over an unencrypted and unauthenticated channel.\n\nExample 1: The following code uses the SecurityMiddleware but does not explicitly set SECURE_SSL_REDIRECT to True.\n\n\n...\nMIDDLEWARE_CLASSES = (\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'csp.middleware.CSPMiddleware',\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\n\n\nUse secure protocols such as HTTPS to exchange data with the server whenever possible.\n\nSet the SECURE_SSL_REDIRECT setting to True if all non-SSL requests should be permanently redirected to SSL. This configuration property is available in Django version 1.8+. If using an earlier version, the django-secure middleware plugin can be used instead.\n\nExample 1: The following code uses the SecurityMiddleware and explicitly sets SECURE_SSL_REDIRECT to True.\n\n\n...\nMIDDLEWARE_CLASSES = (\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'csp.middleware.CSPMiddleware',\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\nSECURE_SSL_REDIRECT = True\n...\n\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4260/?engineType=SCA&issue=BF17023672C75DF484A9A56A1549D745"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -159,8 +150,7 @@
             "text" : "The program does not explicitly set the <code>SESSION_COOKIE_SECURE</code> property to <code>True</code> or set it to <code>False</code> in settings.py on line 16. \n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4264/?engineType=SCA&issue=E93BFD5918DA8CBAFF95B9167B1C4C3C.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4264/?engineType=SCA&issue=E93BFD5918DA8CBAFF95B9167B1C4C3C)."
+            "text" : "Modern web browsers support a Secure flag for each cookie. If the flag is set, the browser will only send the cookie over HTTPS. Sending cookies over an unencrypted channel can expose them to network sniffing attacks, so the secure flag helps keep a cookie's value confidential. This is especially important if the cookie contains private data, session identifiers, or carries a CSRF token.\n\nIn this case, the program fails to set the SESSION_COOKIE_SECURE property to True in settings.py on line 16.\n\n\nExample 1: The following configuration entry does not explicitly set the Secure bit for session cookies.\n\n...\nMIDDLEWARE_CLASSES = (\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'csp.middleware.CSPMiddleware',\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\n\n\nIf an application uses both HTTPS and HTTP, but does not set the Secure flag, cookies sent during an HTTPS request will also be sent during subsequent HTTP requests. Attackers may then compromise the cookie by sniffing the unencrypted network traffic, which is particularly easy over wireless networks.\n\nSet the Secure flag on all cookies in order to instruct browsers not to send these cookies over HTTPS.\n\nExample 2: The following code corrects the mistake in Example 1 by explicitly setting the SESSION_COOKIE_SECURE property to True.\n\n\n...\nMIDDLEWARE_CLASSES = (\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'csp.middleware.CSPMiddleware',\n    'django.middleware.security.SecurityMiddleware',\n    ...\n)\n...\nSESSION_COOKIE_SECURE = True\n...\n\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4264/?engineType=SCA&issue=E93BFD5918DA8CBAFF95B9167B1C4C3C"
           },
           "properties" : {
             "tags" : [ "High" ],
@@ -175,8 +165,7 @@
             "text" : "Hardcoded encryption keys could compromise system security in a way that cannot be easily remedied.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4236/?engineType=SCA&issue=19DDDB5735410A64F88084A1B4F58F1E.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4236/?engineType=SCA&issue=19DDDB5735410A64F88084A1B4F58F1E)."
+            "text" : "It is never a good idea to hardcode an encryption key. Not only does hardcoding an encryption key allow all of the project's developers to view the encryption key, it also makes fixing the problem extremely difficult. After the code is in production, a software patch is required to change the encryption key. If the account protected by the encryption key is compromised, the owners of the system must choose between security and availability.\n\n\nExample: The following code uses a hardcoded encryption key to encrypt information:\n\n...\nfrom Crypto.Ciphers import AES\nencryption_key = b'_hardcoded__key_'\ncipher = AES.new(encryption_key, AES.MODE_CFB, iv)\nmsg = iv + cipher.encrypt(b'Attack at dawn')\n...\n\n\nThis code will run successfully, but anyone who has access to it will have access to the encryption key. After the program ships, there is likely no way to change the hardcoded encryption key _hardcoded__key_ unless the program is patched. A devious employee with access to this information can use it to compromise data encrypted by the system.\n\nEncryption keys should never be hardcoded and should generally be obfuscated and managed in an external source. Storing encryption keys in plain text anywhere on the system allows anyone with sufficient permissions to read and potentially misuse the encryption key.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4236/?engineType=SCA&issue=19DDDB5735410A64F88084A1B4F58F1E"
           },
           "properties" : {
             "tags" : [ "High" ],
@@ -191,8 +180,7 @@
             "text" : "Revealing system data or debugging information helps an adversary learn about the system and form a plan of attack.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4263/?engineType=SCA&issue=C9A0433C14D2F5E24FF6BCFEBABAE595.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4263/?engineType=SCA&issue=C9A0433C14D2F5E24FF6BCFEBABAE595)."
+            "text" : "An external information leak occurs when system data or debugging information leaves the program to a remote machine via a socket or network connection.\n\nExample 1: The following code prints all the system environment variables as part of the HTTP response:\n\n\n...\nimport cgi\ncgi.print_environ()\n...\n\n\nDepending upon the system configuration, this information can be dumped to a console, written to a log file, or exposed to a remote user. For example, with scripting mechanisms it is trivial to redirect output information from \"Standard error\" or \"Standard output\" into a file or another program. Alternatively, the system that the program runs on could have a remote logging mechanism such as a \"syslog\" server that sends the logs to a remote device. During development, you have no way of knowing where this information might end up being displayed.\n\nIn some cases, the error message provides the attacker with the precise type of attack to which the system is vulnerable. For example, a database error message can reveal that the application is vulnerable to a SQL injection attack. Other error messages can reveal more oblique clues about the system. In Example 1, the leaked information could imply information about the type of operating system, the applications installed on the system, and the amount of care that the administrators have put into configuring the program.\n\nWrite error messages with security in mind. In production environments, turn off detailed error information in favor of brief messages. Restrict the generation and storage of detailed output that can help administrators and programmers diagnose problems. Debug traces can sometimes appear in non-obvious places (embedded in comments in the HTML for an error page, for example).\n\nEven brief error messages that do not reveal stack traces or database dumps can potentially aid an attacker. For example, an \"Access Denied\" message can reveal that a file or user exists on the system.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4263/?engineType=SCA&issue=C9A0433C14D2F5E24FF6BCFEBABAE595"
           },
           "properties" : {
             "tags" : [ "High" ],
@@ -207,8 +195,7 @@
             "text" : "Revealing system data or debugging information helps an adversary learn about the system and form a plan of attack.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4241/?engineType=SCA&issue=2B93C83A4867712F53258F39D02AE0CB.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4241/?engineType=SCA&issue=2B93C83A4867712F53258F39D02AE0CB)."
+            "text" : "An external information leak occurs when system data or debugging information leaves the program to a remote machine via a socket or network connection.\n\nExample 1: The following code prints all the system environment variables as part of the HTTP response:\n\n\n...\nimport cgi\ncgi.print_environ()\n...\n\n\nDepending upon the system configuration, this information can be dumped to a console, written to a log file, or exposed to a remote user. For example, with scripting mechanisms it is trivial to redirect output information from \"Standard error\" or \"Standard output\" into a file or another program. Alternatively, the system that the program runs on could have a remote logging mechanism such as a \"syslog\" server that sends the logs to a remote device. During development, you have no way of knowing where this information might end up being displayed.\n\nIn some cases, the error message provides the attacker with the precise type of attack to which the system is vulnerable. For example, a database error message can reveal that the application is vulnerable to a SQL injection attack. Other error messages can reveal more oblique clues about the system. In Example 1, the leaked information could imply information about the type of operating system, the applications installed on the system, and the amount of care that the administrators have put into configuring the program.\n\nWrite error messages with security in mind. In production environments, turn off detailed error information in favor of brief messages. Restrict the generation and storage of detailed output that can help administrators and programmers diagnose problems. Debug traces can sometimes appear in non-obvious places (embedded in comments in the HTML for an error page, for example).\n\nEven brief error messages that do not reveal stack traces or database dumps can potentially aid an attacker. For example, an \"Access Denied\" message can reveal that a file or user exists on the system.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4241/?engineType=SCA&issue=2B93C83A4867712F53258F39D02AE0CB"
           },
           "properties" : {
             "tags" : [ "High" ],
@@ -223,8 +210,7 @@
             "text" : "Hardcoded passwords could compromise system security in a way that cannot be easily remedied.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4266/?engineType=SCA&issue=EDD785634D088E1C3C135223B4BBFB42.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4266/?engineType=SCA&issue=EDD785634D088E1C3C135223B4BBFB42)."
+            "text" : "It is never a good idea to hardcode a password. Not only does hardcoding a password allow all of the project's developers to view the password, it also makes fixing the problem extremely difficult. After the code is in production, the password cannot be changed without patching the software. If the account protected by the password is compromised, the owners of the system must choose between security and availability.\n\nIn this case, the password was hardcoded in settings.py on line 101.\n\n\nExample: The following code hardcodes a password:\n\n\npassword = \"tiger\"\n...\nresponse.writeln(\"Password:\" + password)\n\n\nThis code will run successfully, but anyone who has access to it will have access to the password. After the program ships, there is likely no way to change a password of \"tiger\" unless the program is patched. An employee with access to this information can use it to break into the system. Even worse, if attackers have access to the binary for the application they can use one of many publicly available decompilers to access the disassembled code, which will contain the values of the passwords used.\n\nPasswords should never be hardcoded and should generally be obfuscated and managed in an external source. Storing passwords in plain text anywhere on the system allows anyone with sufficient permissions to read and potentially misuse the password.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4266/?engineType=SCA&issue=EDD785634D088E1C3C135223B4BBFB42"
           },
           "properties" : {
             "tags" : [ "High" ],
@@ -239,8 +225,7 @@
             "text" : "Cookie-based sessions are not invalidated when a user logs out. If an attacker were to find, steal, or intercept a user's cookie they could impersonate the user even if that user had logged out.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4253/?engineType=SCA&issue=6EC45FEF0E9B4E6BCD8ED2AD2CFCE75F.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4253/?engineType=SCA&issue=6EC45FEF0E9B4E6BCD8ED2AD2CFCE75F)."
+            "text" : "Storing session data in Cookies presents several problems:\n\n1. Cookie-based sessions are not invalidated when a user logs out. If an attacker were to find, steal, or intercept a user's cookie they could impersonate the user even if that user had logged out.\n\n2. Session cookies are signed to avoid tampering and guarantee the authenticity of the data, but it will not prevent replay attacks.\n\n3. The session data will be stored using Django's tools for cryptographic signing and the SECRET_KEY setting. If the SECRET_KEY is leaked, an attacker cannot only falsify session data, but if application uses Pickle to serialize session data into cookies, an attacker will be able to craft malicious pickled data that will execute arbitrary code upon deserialization.\n\n4. The session data is signed but not encrypted. This means that attackers will be able to read the session data but not modify it.\n\n5. The cookie size and serialization process can pose a performace problem depending on site load.\n\nIf possible, do not use cookie-based sessions. Store session data in the server and always invalidate sessions when users log out.\n\nDjango offers the following alternatives:\n1. Database-backed sessions (Default option)\n2. Memcached-based sessions\n3. File-based sessions\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4253/?engineType=SCA&issue=6EC45FEF0E9B4E6BCD8ED2AD2CFCE75F"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -255,8 +240,7 @@
             "text" : "Pickle-serialized sessions can lead to remote code execution if attackers can control session data.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4246/?engineType=SCA&issue=486506D8686D62CB58263F42EF9EA6BD.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4246/?engineType=SCA&issue=486506D8686D62CB58263F42EF9EA6BD)."
+            "text" : "If cookie-based sessions are used and SECRET_KEY is leaked, an attacker will be able to store arbitrary data in the session cookie which will be deserialized in the server leading to arbitrary code execution.\n\nIf cookie-based sessions are used, take extra care to make sure that the secret key is always kept completely secret, for any system which might be remotely accessible.\n\nExample 1: The following view method allows an attacker to steal the SECRET_KEY if it is hardcoded in settings.py configuration file:\n\n\n...\ndef some_view_method(request):\n  url = request.GET['url']\n  if \"http://\" in url:\n    content = urllib.urlopen(url)\n    return HttpResponse(content)\n  ...\n\n\nExample 1 method checks that the url parameter is a valid URL by checking that \"http://\" is present in the URL. A malicious attacker may send the following URL to leak the settings.py configuration file that may contain the SECRET_KEY:\n\n\nfile://proc/self/cwd/app/settings.py#http://\n\n\nNote: \"/proc/self/cwd\" in UNIX systems points to the process working directory. This allow attackers to reference files without knowing the exact location.\n\nUse JSON rather than pickle to serialize session data. Django 1.5.3 introduced a new setting, SESSION_SERIALIZER, to customize the session serialization format. This setting defaults to django.contrib.sessions.serializers.PickleSerializer in Django 1.5.x, but, for security hardening, defaults to django.contrib.sessions.serializers.JSONSerializer since Django 1.6. It is highly recommended to use JSON serialization when using cookie-based sessions, since in case that SECRET_KEY is compromised, JSON deserialization won't lead to a remote code execution.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4246/?engineType=SCA&issue=486506D8686D62CB58263F42EF9EA6BD"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -271,8 +255,7 @@
             "text" : "Line 184 of views.py invokes a SQL query built with input that comes from an untrusted source. This call could allow an attacker to modify the statement's meaning or to execute arbitrary SQL commands.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4261/?engineType=SCA&issue=C0DB6BA247FA3A6F2C550A602D828C77.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4261/?engineType=SCA&issue=C0DB6BA247FA3A6F2C550A602D828C77)."
+            "text" : "SQL injection errors occur when:\n\n1. Data enters a program from an untrusted source.\n\n\nIn this case, the data enters at upload() in views.py on line 170.\n\n\n2. The data is used to dynamically construct a SQL query.\n\n\nIn this case, the data is passed to execute() in views.py on line 184.\n\n\nExample 1: The following code dynamically constructs and executes a SQL query that searches for items matching a specified name. The query restricts the items displayed to those where the owner matches the user name of the currently-authenticated user.\n\n\n\t...\n\tuserName = req.field('userName')\n\titemName = req.field('itemName')\n\tquery = \"SELECT * FROM items WHERE owner = ' \" + userName +\" ' AND itemname = ' \" + itemName +\"';\"\n\tcursor.execute(query)\n\tresult = cursor.fetchall()\n\t...\n\n\nThe query intends to execute the following code:\n\n\n\tSELECT * FROM items\n\tWHERE owner = &lt;userName&gt;\n\tAND itemname = &lt;itemName&gt;;\n\n\nHowever, because the query is constructed dynamically by concatenating a constant query string and a user input string, the query only behaves correctly if itemName does not contain a single-quote character. If an attacker with the user name wiley enters the string \"name' OR 'a'='a\" for itemName, then the query becomes the following:\n\n\n\tSELECT * FROM items\n\tWHERE owner = 'wiley'\n\tAND itemname = 'name' OR 'a'='a';\n\n\nThe addition of the OR 'a'='a' condition causes the where clause to always evaluate to true, so the query becomes logically equivalent to the much simpler query:\n\n\n\tSELECT * FROM items;\n\n\nThis simplification of the query allows the attacker to bypass the requirement that the query must only return items owned by the authenticated user. The query now returns all entries stored in the items table, regardless of their specified owner.\n\nExample 2: This example examines the effects of a different malicious value passed to the query constructed and executed in Example 1. If an attacker with the user name wiley enters the string \"name'; DELETE FROM items; --\" for itemName, then the query becomes the following two queries:\n\n\n\tSELECT * FROM items\n\tWHERE owner = 'wiley'\n\tAND itemname = 'name';\n\n\tDELETE FROM items;\n\n\t--'\n\n\nMany database servers, including Microsoft(R) SQL Server 2000, allow multiple SQL statements separated by semicolons to be executed at once. While this attack string results in an error on Oracle and other database servers that do not allow the batch-execution of statements separated by semicolons, on databases that do allow batch execution, this type of attack allows the attacker to execute arbitrary commands against the database.\n\nNotice the trailing pair of hyphens (--), which specifies to most database servers that the remainder of the statement is to be treated as a comment and not executed [4]. In this case the comment character serves to remove the trailing single-quote left over from the modified query. On a database where comments are not allowed to be used in this way, the general attack could still be made effective using a trick similar to the one shown in Example 1. If an attacker enters the string \"name'); DELETE FROM items; SELECT * FROM items WHERE 'a'='a\", the following three valid statements will be created:\n\n\n\tSELECT * FROM items\n\tWHERE owner = 'wiley'\n\tAND itemname = 'name';\n\n\tDELETE FROM items;\n\n\tSELECT * FROM items WHERE 'a'='a';\n\n\nOne traditional approach to preventing SQL injection attacks is to handle them as an input validation problem and either accept only characters from an allow list of safe values or identify and escape a list of potentially malicious values (deny list). Checking an allow list can be a very effective means of enforcing strict input validation rules, but parameterized SQL statements require less maintenance and can offer more guarantees with respect to security. As is almost always the case, implementing a deny list is riddled with loopholes that make it ineffective at preventing SQL injection attacks. For example, attackers may:\n\n    - Target fields that are not quoted\n    - Find ways to bypass the need for certain escaped metacharacters\n    - Use stored procedures to hide the injected metacharacters\n\nManually escaping characters in input to SQL queries can help, but it will not make your application secure from SQL injection attacks.\n\nAnother solution commonly proposed for dealing with SQL injection attacks is to use stored procedures. Although stored procedures prevent some types of SQL injection attacks, they fail to protect against many others. Stored procedures typically help prevent SQL injection attacks by limiting the types of statements that can be passed to their parameters. However, there are many ways around the limitations and many interesting statements that can still be passed to stored procedures. Again, stored procedures can prevent some exploits, but they will not make your application secure against SQL injection attacks.\n\nThe root cause of a SQL injection vulnerability is the ability of an attacker to change context in the SQL query, causing a value that the programmer intended to be interpreted as data to be interpreted as a command instead. When a SQL query is constructed, the programmer knows what should be interpreted as part of the command and what should be interpreted as data. Parameterized SQL statements can enforce this behavior by disallowing data-directed context changes and preventing nearly all SQL injection attacks. Parameterized SQL statements are constructed using strings of regular SQL, but where user-supplied data needs to be included, they include bind parameters, which are placeholders for data that is subsequently inserted. In other words, bind parameters allow the programmer to explicitly specify to the database what should be treated as a command and what should be treated as data. When the program is ready to execute a statement, it specifies to the database the runtime values to use for each of the bind parameters without the risk that the data will be interpreted as a modification to the command.\n\nMore complicated scenarios, often found in report generation code, require that user input affect the structure of the SQL statement, for instance by adding a dynamic constraint in the WHERE clause. Do not use this requirement to justify concatenating user input to create a query string. Prevent SQL injection attacks where user input must affect command structure with a level of indirection: create a set of legitimate strings that correspond to different elements you might include in a SQL statement. When constructing a statement, use input from the user to select from this set of application-controlled values.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4261/?engineType=SCA&issue=C0DB6BA247FA3A6F2C550A602D828C77"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -287,8 +270,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 194. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4243/?engineType=SCA&issue=3927138614DDFCB52A1A25DEAD3ECD9E.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4243/?engineType=SCA&issue=3927138614DDFCB52A1A25DEAD3ECD9E)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at upload() in views.py on line 170.\n\nThe data is sent at redirect() in views.py on line 194.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4243/?engineType=SCA&issue=3927138614DDFCB52A1A25DEAD3ECD9E"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -303,8 +285,7 @@
             "text" : "The method download() in views.py includes unvalidated data in an HTTP response header on line 216. This enables attacks such as cache-poisoning, cross-site scripting, cross-user defacement, page hijacking, cookie manipulation or open redirect.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4255/?engineType=SCA&issue=9532F7FC8AEE0F55D23B7A415E19C992.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4255/?engineType=SCA&issue=9532F7FC8AEE0F55D23B7A415E19C992)."
+            "text" : "Header Manipulation vulnerabilities occur when:\n\n1. Data enters a web application through an untrusted source, most frequently an HTTP request.\n\nIn this case, the data enters at get() in views.py on line 208.\n\n\n2. The data is included in an HTTP response header sent to a web user without being validated.\n\nIn this case, the data is sent at __setitem__() in views.py on line 216.\n\nAs with many software security vulnerabilities, Header Manipulation is a means to an end, not an end in itself. At its root, the vulnerability is straightforward: an attacker passes malicious data to a vulnerable application, and the application includes the data in an HTTP response header.\n\nOne of the most common Header Manipulation attacks is HTTP Response Splitting. To mount a successful HTTP Response Splitting exploit, the application must allow input that contains CR (carriage return, also given by %0d or \\r) and LF (line feed, also given by %0a or \n)characters into the header. These characters not only give attackers control of the remaining headers and body of the response the application intends to send, but also allows them to create additional responses entirely under their control.\n\nMany of today's modern application servers will prevent the injection of malicious characters into HTTP headers. If your application server prevents setting headers with new line characters, then your application is not vulnerable to HTTP Response Splitting. However, solely filtering for new line characters can leave an application vulnerable to Cookie Manipulation or Open Redirects, so care must still be taken when setting HTTP headers with user input.\n\nExample: The following code segment reads the location from an HTTP request and sets it in a the header its location field of an HTTP response.\n\n\n    location = req.field('some_location')\n    ...\n    response.addHeader(\"location\",location)\n\n\nAssuming a string consisting of standard alphanumeric characters, such as \"index.html\", is submitted in the request the HTTP response including this cookie might take the following form:\n\n\nHTTP/1.1 200 OK\n...\nlocation: index.html\n...\n\n\nHowever, because the value of the location is formed of unvalidated user input the response will only maintain this form if the value submitted for some_location does not contain any CR and LF characters. If an attacker submits a malicious string, such as \"index.html\\r\nHTTP/1.1 200 OK\\r\n...\", then the HTTP response would be split into two responses of the following form:\n\n\nHTTP/1.1 200 OK\n...\nlocation: index.html\n\nHTTP/1.1 200 OK\n...\n\n\nClearly, the second response is completely controlled by the attacker and can be constructed with any header and body content desired. The ability of attacker to construct arbitrary HTTP responses permits a variety of resulting attacks, including: cross-user defacement, web and browser cache poisoning, cross-site scripting, and page hijacking.\n\nCross-User Defacement: An attacker will be able to make a single request to a vulnerable server that will cause the server to create two responses, the second of which may be misinterpreted as a response to a different request, possibly one made by another user sharing the same TCP connection with the server. This can be accomplished by convincing the user to submit the malicious request themselves, or remotely in situations where the attacker and the user share a common TCP connection to the server, such as a shared proxy server. In the best case, an attacker may leverage this ability to convince users that the application has been hacked, causing users to lose confidence in the security of the application. In the worst case, an attacker may provide especially crafted content designed to mimic the behavior of the application but redirect private information, such as account numbers and passwords, back to the attacker.\n\nCache Poisoning: The impact of a maliciously constructed response can be magnified if it is cached either by a web cache used by multiple users or even the browser cache of a single user. If a response is cached in a shared web cache, such as those commonly found in proxy servers, then all users of that cache will continue receive the malicious content until the cache entry is purged. Similarly, if the response is cached in the browser of an individual user, then that user will continue to receive the malicious content until the cache entry is purged, although only the user of the local browser instance will be affected.\n\nCross-Site Scripting: Once attackers have control of the responses sent by an application, they have a choice of a variety of malicious content to provide users. Cross-site scripting is common form of attack where malicious JavaScript or other code included in a response is executed in the user's browser. The variety of attacks based on XSS is almost limitless, but they commonly include transmitting private data such as cookies or other session information to the attacker, redirecting the victim to web content controlled by the attacker, or performing other malicious operations on the user's machine under the guise of the vulnerable site. The most common and dangerous attack vector against users of a vulnerable application uses JavaScript to transmit session and authentication information back to the attacker who can then take complete control of the victim's account.\n\nPage Hijacking: In addition to using a vulnerable application to send malicious content to a user, the same root vulnerability can also be leveraged to redirect sensitive content generated by the server and intended for the user to the attacker instead. By submitting a request that results in two responses, the intended response from the server and the response generated by the attacker, an attacker may cause an intermediate node, such as a shared proxy server, to misdirect a response generated by the server for the user to the attacker. Because the request made by the attacker generates two responses, the first is interpreted as a response to the attacker's request, while the second remains in limbo. When the user makes a legitimate request through the same TCP connection, the attacker's request is already waiting and is interpreted as a response to the victim's request. The attacker then sends a second request to the server, to which the proxy server responds with the server generated request intended for the victim, thereby compromising any sensitive information in the headers or body of the response intended for the victim.\n\nCookie Manipulation: When combined with attacks like Cross-Site Request Forgery, attackers may change, add to, or even overwrite a legitimate user's cookies.\n\nOpen Redirect: Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\nThe solution to prevent Header Manipulation is to ensure that input validation occurs in the required places and checks for the correct properties.\n\nSince Header Manipulation vulnerabilities occur when an application includes malicious data in its output, one logical approach is to validate data immediately before it leaves the application. However, because web applications often have complex and intricate code for generating responses dynamically, this method is prone to errors of omission (missing validation). An effective way to mitigate this risk is to also perform input validation for Header Manipulation.\n\nWeb applications must validate all input to prevent other vulnerabilities, such as SQL injection, so augmenting an application's existing input validation mechanism to include checks for Header Manipulation is generally relatively easy. Despite its value, input validation for Header Manipulation does not take the place of rigorous output validation. An application might accept input through a shared data store or other trusted source, and that data store might accept input from a source that does not perform adequate input validation. Therefore, the application cannot implicitly rely on the safety of this or any other data. This means that the best way to prevent Header Manipulation vulnerabilities is to validate everything that enters the application or leaves the application destined for the user.\n\nThe most secure approach to validation for Header Manipulation is to create an allow list of safe characters that can appear in HTTP response headers and accept input composed exclusively of characters in the approved set. For example, a valid name might only include alphanumeric characters or an account number might only include digits 0-9.\n\nA more flexible, but less secure approach is to implement a deny list, which selectively rejects or escapes potentially dangerous characters before using the input. To form such a list, you first need to understand the set of characters that hold special meaning in HTTP response headers. Although the CR and LF characters are at the heart of an HTTP response splitting attack, other characters, such as ':' (colon) and '=' (equal), have special meaning in response headers as well.\n\nAfter you identify the correct points in an application to perform validation for Header Manipulation attacks and what special characters the validation should consider, the next challenge is to identify how your validation handles special characters. The application should reject any input destined to be included in HTTP response headers that contains special characters, particularly CR and LF, as invalid.\n\nMany application servers attempt to limit an application's exposure to HTTP response splitting vulnerabilities by providing implementations for the functions responsible for setting HTTP headers and cookies that perform validation for the characters essential to an HTTP response splitting attack. Do not rely on the server running your application to make it secure. For any developed application, there are no guarantees about which application servers it will run on during its lifetime. As standards and known exploits evolve, there are no guarantees that application servers will continue to stay in sync.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4255/?engineType=SCA&issue=9532F7FC8AEE0F55D23B7A415E19C992"
           },
           "properties" : {
             "tags" : [ "High" ],
@@ -319,8 +300,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 225. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4237/?engineType=SCA&issue=1B1189451A564701081FB9357BF5BA43.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4237/?engineType=SCA&issue=1B1189451A564701081FB9357BF5BA43)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at get() in views.py on line 222.\n\nThe data is sent at redirect() in views.py on line 225.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4237/?engineType=SCA&issue=1B1189451A564701081FB9357BF5BA43"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -335,8 +315,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 264. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4238/?engineType=SCA&issue=1C9931ACF00CCC1B126BD888899C79BB.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4238/?engineType=SCA&issue=1C9931ACF00CCC1B126BD888899C79BB)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at task_create() in views.py on line 240.\n\nThe data is sent at redirect() in views.py on line 264.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4238/?engineType=SCA&issue=1C9931ACF00CCC1B126BD888899C79BB"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -351,8 +330,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 291. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4251/?engineType=SCA&issue=69B0F6B34C1BB7EF4E0768695318E591.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4251/?engineType=SCA&issue=69B0F6B34C1BB7EF4E0768695318E591)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at task_edit() in views.py on line 273.\n\nThe data is sent at redirect() in views.py on line 291.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4251/?engineType=SCA&issue=69B0F6B34C1BB7EF4E0768695318E591"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -367,8 +345,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 291. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4258/?engineType=SCA&issue=B407C69ACDC3588CFB7381AE5A31A012.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4258/?engineType=SCA&issue=B407C69ACDC3588CFB7381AE5A31A012)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at task_edit() in views.py on line 273.\n\nThe data is sent at redirect() in views.py on line 291.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4258/?engineType=SCA&issue=B407C69ACDC3588CFB7381AE5A31A012"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -383,8 +360,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 306. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4250/?engineType=SCA&issue=646CA549631192C553D1B083992AFCF7.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4250/?engineType=SCA&issue=646CA549631192C553D1B083992AFCF7)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at task_delete() in views.py on line 299.\n\nThe data is sent at redirect() in views.py on line 306.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4250/?engineType=SCA&issue=646CA549631192C553D1B083992AFCF7"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -399,8 +375,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 319. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4239/?engineType=SCA&issue=2647EDB86A99599FFBBAD1CDD5ABE2DF.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4239/?engineType=SCA&issue=2647EDB86A99599FFBBAD1CDD5ABE2DF)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at task_complete() in views.py on line 311.\n\nThe data is sent at redirect() in views.py on line 319.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4239/?engineType=SCA&issue=2647EDB86A99599FFBBAD1CDD5ABE2DF"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -415,8 +390,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 368. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4259/?engineType=SCA&issue=BF028F51ABAA150FFA78BFCA5E9C3631.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4259/?engineType=SCA&issue=BF028F51ABAA150FFA78BFCA5E9C3631)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at project_edit() in views.py on line 350.\n\nThe data is sent at redirect() in views.py on line 368.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4259/?engineType=SCA&issue=BF028F51ABAA150FFA78BFCA5E9C3631"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -431,8 +405,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 545. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4249/?engineType=SCA&issue=634EE60B51A84DC9AB23207A514D7714.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4249/?engineType=SCA&issue=634EE60B51A84DC9AB23207A514D7714)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at note_create() in views.py on line 530.\n\nThe data is sent at redirect() in views.py on line 545.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4249/?engineType=SCA&issue=634EE60B51A84DC9AB23207A514D7714"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -447,8 +420,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 545. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4267/?engineType=SCA&issue=F56D504674CA50F4DB0EB66228C6E430.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4267/?engineType=SCA&issue=F56D504674CA50F4DB0EB66228C6E430)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at note_create() in views.py on line 530.\n\nThe data is sent at redirect() in views.py on line 545.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4267/?engineType=SCA&issue=F56D504674CA50F4DB0EB66228C6E430"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -463,8 +435,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 573. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4242/?engineType=SCA&issue=37DB9A654366AF2A653F1924F6C86386.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4242/?engineType=SCA&issue=37DB9A654366AF2A653F1924F6C86386)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at note_edit() in views.py on line 554.\n\nThe data is sent at redirect() in views.py on line 573.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4242/?engineType=SCA&issue=37DB9A654366AF2A653F1924F6C86386"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -479,8 +450,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 573. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4262/?engineType=SCA&issue=C4C5D83A1F4FDD0C795B08BEA1796DFF.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4262/?engineType=SCA&issue=C4C5D83A1F4FDD0C795B08BEA1796DFF)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at note_edit() in views.py on line 554.\n\nThe data is sent at redirect() in views.py on line 573.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4262/?engineType=SCA&issue=C4C5D83A1F4FDD0C795B08BEA1796DFF"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -495,8 +465,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 590. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4254/?engineType=SCA&issue=8D733E4BB3CA9D2C58BF6556A60F548D.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4254/?engineType=SCA&issue=8D733E4BB3CA9D2C58BF6556A60F548D)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at note_delete() in views.py on line 581.\n\nThe data is sent at redirect() in views.py on line 590.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4254/?engineType=SCA&issue=8D733E4BB3CA9D2C58BF6556A60F548D"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -511,8 +480,7 @@
             "text" : "The file views.py passes unvalidated data to an HTTP redirect function on line 590. Allowing unvalidated input to control the URL used in a redirect can aid phishing attacks.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4265/?engineType=SCA&issue=EAD606D6F6A5A2C5388D9336C3E9810F.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4265/?engineType=SCA&issue=EAD606D6F6A5A2C5388D9336C3E9810F)."
+            "text" : "Redirects allow web applications to direct users to different pages within the same application or to external sites. Applications utilize redirects to aid in site navigation and, in some cases, to track how users exit the site. Open redirect vulnerabilities occur when a web application redirects clients to any arbitrary URL that can be controlled by an attacker.\n\nAttackers might utilize open redirects to trick users into visiting a URL to a trusted site, but then redirecting them to a malicious site. By encoding the URL, an attacker can make it difficult for end-users to notice the malicious destination of the redirect, even when it is passed as a URL parameter to the trusted site. Open redirects are often abused as part of phishing scams to harvest sensitive end-user data.\n\n\nIn this case, the URL the client will be redirected to is accepted at note_delete() in views.py on line 581.\n\nThe data is sent at redirect() in views.py on line 590.\n\n\nExample 1: The following Python code instructs the user's browser to open a URL parsed from the dest request parameter when a user clicks the link.\n\n\n        ...\n        strDest = request.field(\"dest\")\n        redirect(strDest)\n        ...\n\n\nIf a victim received an email instructing them to follow a link to \"http://trusted.example.com/ecommerce/redirect.asp?dest=www.wilyhacker.com\", the user would likely click on the link believing they would be transferred to the trusted site. However, when the victim clicks the link, the code in Example 1 will redirect the browser to \"http://www.wilyhacker.com\".\n\nMany users have been educated to always inspect URLs they receive in emails to make sure the link specifies a trusted site they know. However, if the attacker Hex encoded the destination url as follows:\n\"http://trusted.example.com/ecommerce/redirect.asp?dest=%77%69%6C%79%68%61%63%6B%65%72%2E%63%6F%6D\"\n\nthen even a savvy end-user may be fooled into following the link.\n\nUnvalidated user input should not be allowed to control the destination URL in a redirect. Instead, use a level of indirection: create a list of legitimate URLs that users are allowed to specify and only allow users to select from the list. With this approach, input provided by users is never used directly to specify a URL for redirects.\n\nIn some situations this approach is impractical because the set of legitimate URLs is too large or too hard to keep track of. In such cases, use a similar approach to restrict the domains that users can be redirected to, which can at least prevent attackers from sending users to malicious external sites.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4265/?engineType=SCA&issue=EAD606D6F6A5A2C5388D9336C3E9810F"
           },
           "properties" : {
             "tags" : [ "Critical" ],
@@ -527,8 +495,7 @@
             "text" : "Storing passwords or password details in plain text anywhere in the system or system code may compromise system security in a way that cannot be easily remedied.\n\n\n"
           },
           "help" : {
-            "text" : "For detailed recommendations, code examples, dataflow diagram and more, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4268/?engineType=SCA&issue=FE54C0797FC1325EB7A4B086E947A119.",
-            "markdown" : "For detailed recommendations, code examples, dataflow diagram and more, log in to [SSC](http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4268/?engineType=SCA&issue=FE54C0797FC1325EB7A4B086E947A119)."
+            "text" : "It is never a good idea to hardcode a password. Storing password details within comments is equivalent to hardcoding passwords. Not only does it allow all of the project's developers to view the password, it also makes fixing the problem extremely difficult. After the code is in production, the password is now leaked to the outside world and cannot be protected or changed without patching the software. If the account protected by the password is compromised, the owners of the system must choose between security and availability.\n\nIn this case, the password details appear in the comment in views.py on line 765.\n\n\nExample: The following comment specifies the default password to connect to a database:\n\n\n...\n# Default username for database connection is \"scott\"\n# Default password for database connection is \"tiger\"\n...\n\n\nThis code will run successfully, but anyone who has access to it will have access to the password. An employee with access to this information can use it to break into the system.\n\nPasswords should never be hardcoded and should generally be obfuscated and managed in an external source. Storing passwords in plain text anywhere on the system allows anyone with sufficient permissions to read and potentially misuse the password.\n\n\n\n\nFor more information, see http://192.168.65.213:8080/ssc/html/ssc/version/9/fix/4268/?engineType=SCA&issue=FE54C0797FC1325EB7A4B086E947A119"
           },
           "properties" : {
             "tags" : [ "Low" ],
@@ -558,6 +525,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "forms.py:75 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/forms.py"
+                },
+                "region" : {
+                  "startLine" : 75
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "forms.py:75 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/forms.py"
+                },
+                "region" : {
+                  "startLine" : 75
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "forms.py:75 - FieldAccess: exclude"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/forms.py"
+                },
+                "region" : {
+                  "startLine" : 75
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4240",
@@ -580,6 +594,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:44 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4244",
@@ -602,6 +663,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:36 - FunctionCall: tuple"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 36
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:28 - VariableAccess: True"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4245",
@@ -624,6 +746,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:44 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:110 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 110
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4247",
@@ -646,6 +829,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:44 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4248",
@@ -668,6 +898,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:44 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4252",
@@ -690,6 +967,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:44 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4257",
@@ -712,6 +1036,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:44 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4260",
@@ -734,6 +1105,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:44 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4264",
@@ -756,6 +1174,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:16 - Block"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 16
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:44 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 44
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4236",
@@ -778,6 +1243,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:24 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 24
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:24 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 24
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:24 - VariableAccess: SECRET_KEY"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 24
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4263",
@@ -800,6 +1312,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:28 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:28 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:28 - VariableAccess: DEBUG"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 28
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4241",
@@ -822,6 +1381,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:29 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 29
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:29 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 29
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:29 - VariableAccess: TEMPLATE_DEBUG"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 29
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4266",
@@ -844,6 +1450,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:101 - VariableAccess: PASSWORD_HASHERS"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 101
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:101 - VariableAccess: PASSWORD_HASHERS"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 101
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:101 - Variable: PASSWORD_HASHERS"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 101
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4253",
@@ -866,6 +1519,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:104 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 104
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:104 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 104
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:104 - VariableAccess: SESSION_ENGINE"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 104
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4246",
@@ -888,6 +1588,53 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:109 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 109
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:109 - AssignmentStatement"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 109
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "settings.py:109 - VariableAccess: SESSION_SERIALIZER"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/settings.py"
+                },
+                "region" : {
+                  "startLine" : 109
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4261",
@@ -910,6 +1657,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:170 - upload(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 170
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:184 - execute(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 184
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:170 - upload(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 170
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:184 - execute(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 184
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4243",
@@ -932,6 +1740,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:170 - upload(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 170
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:194 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 194
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:170 - upload(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 170
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:194 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 194
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4255",
@@ -954,6 +1823,95 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:208 - get(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 208
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:216 - __setitem__(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 216
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:208 - get(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 208
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:208 - Assignment to file"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 208
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:216 - __getitem__(0['0'] : return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 216
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:216 - __setitem__(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 216
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4237",
@@ -976,6 +1934,95 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:222 - get(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 222
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:225 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 225
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:222 - get(return)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 222
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:222 - Assignment to user"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 222
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:223 - Assignment to filepath"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 223
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:225 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 225
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4238",
@@ -998,6 +2045,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:240 - task_create(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 240
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:264 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 264
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:240 - task_create(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 240
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:264 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 264
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4251",
@@ -1020,6 +2128,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:273 - task_edit(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 273
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:291 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 291
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:273 - task_edit(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 273
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:291 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 291
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4258",
@@ -1042,6 +2211,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:273 - task_edit(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 273
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:291 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 291
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:273 - task_edit(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 273
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:291 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 291
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4250",
@@ -1064,6 +2294,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:299 - task_delete(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 299
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:306 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 306
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:299 - task_delete(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 299
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:306 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 306
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4239",
@@ -1086,6 +2377,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:311 - task_complete(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 311
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:319 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 319
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:311 - task_complete(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 311
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:319 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 319
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4259",
@@ -1108,6 +2460,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:350 - project_edit(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 350
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:368 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 368
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:350 - project_edit(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 350
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:368 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 368
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4249",
@@ -1130,6 +2543,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:530 - note_create(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 530
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:545 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 545
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:530 - note_create(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 530
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:545 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 545
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4267",
@@ -1152,6 +2626,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:530 - note_create(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 530
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:545 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 545
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:530 - note_create(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 530
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:545 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 545
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4242",
@@ -1174,6 +2709,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:554 - note_edit(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 554
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:573 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 573
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:554 - note_edit(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 554
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:573 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 573
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4262",
@@ -1196,6 +2792,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:554 - note_edit(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 554
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:573 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 573
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:554 - note_edit(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 554
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:573 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 573
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4254",
@@ -1218,6 +2875,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:581 - note_delete(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 581
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:590 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 590
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:581 - note_delete(1)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 581
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:590 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 590
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4265",
@@ -1240,6 +2958,67 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:581 - note_delete(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 581
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:590 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 590
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:581 - note_delete(2)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 581
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:590 - redirect(0)"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 590
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     }, {
       "ruleId" : "4268",
@@ -1262,6 +3041,39 @@
             "endColumn" : 80
           }
         }
+      } ],
+      "codeFlows" : [ {
+        "threadFlows" : [ {
+          "locations" : [ {
+            "location" : {
+              "message" : {
+                "text" : "views.py:765 - Comment"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 765
+                }
+              }
+            }
+          }, {
+            "location" : {
+              "message" : {
+                "text" : "views.py:765 - Comment"
+              },
+              "physicalLocation" : {
+                "artifactLocation" : {
+                  "uri" : "taskManager/views.py"
+                },
+                "region" : {
+                  "startLine" : 765
+                }
+              }
+            }
+          } ]
+        } ]
       } ]
     } ]
   } ]
